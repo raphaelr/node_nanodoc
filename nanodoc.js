@@ -14,15 +14,25 @@ module.exports = function(options) {
 	options.input = options.input || docdir + '/input';
 	options.data = options.data || docdir + '/data';
 	options.output = options.output || docdir + '/output';
+	options.callback = options.callback || function(err) { if(err) throw err; };
 	
-	rimraf(options.output, function(err) {
-		if(err) throw err;
-		fs.mkdir(options.output, undefined, function(err) {
+	try {
+		begin();
+		options.callback();
+	} catch(err) {
+		options.callback(err);
+	}
+	
+	function begin() {
+		rimraf(options.output, function(err) {
 			if(err) throw err;
-			parseInputFiles();
-			copyDataFiles();
+			fs.mkdir(options.output, undefined, function(err) {
+				if(err) throw err;
+				parseInputFiles();
+				copyDataFiles();
+			});
 		});
-	});
+	}
 	
 	function parseInputFiles() {
 		var template_html = fs.readFileSync(path.join(options.data, 'template.html'), 'utf8');
