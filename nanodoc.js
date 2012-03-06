@@ -53,7 +53,6 @@ module.exports = function(options, cb) {
 		var ok = true;
 		argsArray.forEach(function(args) {
 			if(ok && args[0] && args[0][0]) { ok = false; cb(args[0][0]); }
-			//if(ok && args[0]) { ok = false; cb(args[0]); }
 		});
 		if(ok) { this.call(this, argsArray); }
 	}
@@ -100,7 +99,8 @@ module.exports = function(options, cb) {
 					fs.readFile(input, 'utf8', errcheck(this));
 				}, function(data) {
 					data = showdown(data[0]);
-					var title = data.match(/<h1(?:.*?)>(.*?)<\/h1>/)[1];
+					var titleMatch = data.match(/<h1(?:.*?)>(.*?)<\/h1>/);
+					var title = titleMatch ? titleMatch[1] : basename;
 					data = jqtpl.tmpl('doc', { content: data, title: title });
 					fs.writeFile(outpath, data, 'utf8', errcheck(this));
 				}, cb

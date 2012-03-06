@@ -42,4 +42,12 @@ describe('input transform', function() {
 			done();
 		});
 	});
+	
+	it('should use a default value for the title if none is given', function(done) {
+		fs.readFile(helper.outfile('no_title.html'), 'utf8', function(err, data) {
+			if(err) return done(err);
+			expect(data.match(/^no_title;/)).to.be.ok();
+			done();
+		});
+	});
 });
