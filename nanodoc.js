@@ -5,7 +5,8 @@ var fs = require('fs'),
     jqtpl = require('jqtpl'),
     path = require('path'),
     rimraf = require('rimraf'),
-    util = require('util');
+    util = require('util'),
+    wrench = require('wrench');
 
 module.exports = function(options, cb) {
 	if(cb === undefined && typeof options === 'function') {
@@ -108,6 +109,16 @@ module.exports = function(options, cb) {
 	}
 	
 	function copyDataFiles(cb) {
+		flow.exec(
+			function() {
+				wrench.copyDirRecursive(options.data, options.output, errcheck(this));
+			}, function() {
+				fs.unlink(options.output + '/template.html', errcheck(this));
+			}, cb
+		);
+	}
+	
+	function old_copyDataFiles(cb) {
 		flow.exec(
 			function() {
 				glob(options.data + '/**/*', { }, errcheck(this));
