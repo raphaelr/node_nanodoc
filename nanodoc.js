@@ -73,7 +73,7 @@ module.exports = function(options, cb) {
 				jqtpl.template('doc', html[0]);
 				glob(options.input + '/**/*.{md,markdown}', {}, errcheck(this));
 			}, function(matches) {
-				for(var i=0; i<matches[0]; i++) {
+				for(var i=0; i<matches[0].length; i++) {
 					var match = matches[0][i];
 					parseOneInputFile(match, this.MULTI());
 				}
@@ -85,15 +85,16 @@ module.exports = function(options, cb) {
 		var basename = input.match(/^doc\/input\/(.*)\.(md|markdown)$/)[1].replace(/\//g, '.');
 		var outfile = options.output + '/' + basename + '.html';
 		transform(input, outfile, cb, function(inpath, outpath, cb) {
-			fs.readFile(input, 'utf8', function(err, data) {
-				if(err) return cb(err);
-				data = showdown(data);
-				var title = data.match(/<h1(?:.*?)>(.*?)<\/h1>/)[1];
-				data = jqtpl.tmpl('doc', { content: data, title: title });
-				fs.writeFile(outpath, data, 'utf8', function(err) {
-					if(err) return cb(err);
-				});
-			});
+			flow.exec(
+				function() {
+					fs.readFile(input, 'utf8', errcheck(this));
+				}, function(data) {
+					data = showdown(data[0]);
+					var title = data.match(/<h1(?:.*?)>(.*?)<\/h1>/)[1];
+					data = jqtpl.tmpl('doc', { content: data, title: title });
+					fs.writeFile(outpath, data, 'utf8', errcheck(this));
+				}
+			);
 		});
 	}
 	
