@@ -157,11 +157,12 @@ module.exports = function(options, cb) {
 	}
 	
 	function buildNavigation(root) {
+		var toplevel = !root;
 		root = root || inputs;
 		if(typeof root !== 'object') { return; }
 		
 		return _.reduce(root, function(list, node) {
-			if(node['|thisname'] === 'index' || typeof node !== 'object') { return list; }
+			if(node['|thisname'] === 'index' && !toplevel || typeof node !== 'object') { return list; }
 			list += '<li>';
 			if(node.content) {
 				list += '<a href="' + node.basename + '.html">' + node.title + '</a>';

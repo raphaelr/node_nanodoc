@@ -4,6 +4,9 @@ Thanks for using [nanodoc](https://github.com/raphaelr/node_nanodoc)! To get sta
 add your own input files to the `doc/input` folder. You can (and probably should!) also
 change the template in `doc/data/template.html` and `doc/data/css/site.css`.
 
+Please also read the [Readme](https://github.com/raphaelr/node_nanodoc/blob/master/README.md),
+which contains a lot of useful information about using nanodoc.
+
 Links
 -----
 To create links to other pages in the documentation, use the standard Markdown link

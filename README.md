@@ -34,6 +34,7 @@ template.html substitutions
 ===========================
 * **content**: The HTML of the input file
 * **title**: The title of the input file, see above
+* **navigation**: The navigation tree HTML
 
 Requirements
 ============
