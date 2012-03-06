@@ -117,26 +117,4 @@ module.exports = function(options, cb) {
 			}, cb
 		);
 	}
-	
-	function old_copyDataFiles(cb) {
-		flow.exec(
-			function() {
-				glob(options.data + '/**/*', { }, errcheck(this));
-			}, function(matches) {
-				for(var i=0; i<matches[0].length; i++) {
-					var match = matches[0][i];
-					copyOneDataFile(match, this.MULTI());
-				}
-				this.MULTI()();
-			}, errcheckMulti, cb
-		);
-	}
-	
-	function copyOneDataFile(input, callback) {
-		if(input === options.data + '/template.html') return callback();
-		var outfile = input.replace(dataName, options.output + '/$1');
-		transform(input, outfile, callback, function(inpath, outpath, callback) {
-			util.pump(fs.createReadStream(inpath), fs.createWriteStream(outpath), errcheck(callback));
-		});
-	}
 };
