@@ -18,6 +18,9 @@ module.exports = function(options, cb) {
 	options.data = options.data || docdir + '/data';
 	options.output = options.output || docdir + '/output';
 	
+	var inputBasename = new RegExp('^' + escapeRegex(options.input) + '\/?(.*)\.(md|markdown)$');
+	var dataName = new RegExp('^' + escapeRegex(options.data) + '\/?(.*)$');
+	
 	flow.exec(
 		function() {
 			rimraf(options.output, errcheck(this));
@@ -65,6 +68,10 @@ module.exports = function(options, cb) {
 		});
 	}
 	
+	function escapeRegex(text) {
+		return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+	}
+	
 	// Main logic
 	function parseInputFiles(cb) {
 		flow.exec(
@@ -79,12 +86,12 @@ module.exports = function(options, cb) {
 					parseOneInputFile(match, this.MULTI());
 				}
 				this.MULTI()();
-			}, cb
+			}, errcheckMulti, cb
 		);
 	}
 	
 	function parseOneInputFile(input, cb) {
-		var basename = input.match(/^doc\/input\/(.*)\.(md|markdown)$/)[1].replace(/\//g, '.');
+		var basename = input.match(inputBasename)[1].replace(/\//g, '.');
 		var outfile = options.output + '/' + basename + '.html';
 		transform(input, outfile, cb, function(inpath, outpath, cb) {
 			flow.exec(
@@ -95,7 +102,7 @@ module.exports = function(options, cb) {
 					var title = data.match(/<h1(?:.*?)>(.*?)<\/h1>/)[1];
 					data = jqtpl.tmpl('doc', { content: data, title: title });
 					fs.writeFile(outpath, data, 'utf8', errcheck(this));
-				}
+				}, cb
 			);
 		});
 	}
@@ -116,9 +123,8 @@ module.exports = function(options, cb) {
 	
 	function copyOneDataFile(input, callback) {
 		if(input === options.data + '/template.html') return callback();
-		var outfile = input.replace(/^doc\/data\/(.*)$/, options.output + '/$1');
+		var outfile = input.replace(dataName, options.output + '/$1');
 		transform(input, outfile, callback, function(inpath, outpath, callback) {
-			console.log(inpath, outpath);
 			util.pump(fs.createReadStream(inpath), fs.createWriteStream(outpath), errcheck(callback));
 		});
 	}
