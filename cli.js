@@ -1,4 +1,4 @@
 var nanodoc = require('./nanodoc');
 nanodoc(function(err) {
-	console.log('DONE', err);
+	if(err) throw err;
 });

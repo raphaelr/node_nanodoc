@@ -48,7 +48,8 @@ module.exports = function(options, cb) {
 	function errcheckMulti(argsArray) {
 		var ok = true;
 		argsArray.forEach(function(args) {
-			if(ok && args[0]) { ok = false; cb(args[0]); }
+			if(ok && args[0] && args[0][0]) { ok = false; cb(args[0][0]); }
+			//if(ok && args[0]) { ok = false; cb(args[0]); }
 		});
 		if(ok) { this.call(this, argsArray); }
 	}
@@ -77,6 +78,7 @@ module.exports = function(options, cb) {
 					var match = matches[0][i];
 					parseOneInputFile(match, this.MULTI());
 				}
+				this.MULTI()();
 			}, cb
 		);
 	}
@@ -107,6 +109,7 @@ module.exports = function(options, cb) {
 					var match = matches[0][i];
 					copyOneDataFile(match, this.MULTI());
 				}
+				this.MULTI()();
 			}, errcheckMulti, cb
 		);
 	}
@@ -115,6 +118,7 @@ module.exports = function(options, cb) {
 		if(input === options.data + '/template.html') return callback();
 		var outfile = input.replace(/^doc\/data\/(.*)$/, options.output + '/$1');
 		transform(input, outfile, callback, function(inpath, outpath, callback) {
+			console.log(inpath, outpath);
 			util.pump(fs.createReadStream(inpath), fs.createWriteStream(outpath), errcheck(callback));
 		});
 	}
