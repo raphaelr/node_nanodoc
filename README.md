@@ -28,6 +28,7 @@ Useful notes
   `doc/input/api/god-object.md` becomes `doc/output/api.god-object.html`.
 * The `doc/output` directory is purged everytime nanodoc runs.
 * The title of the HTML files is the first Level-1 header (i.e. `<h1>`) of the input file.
+* For best results, **don't** use absolute paths on Windows when using the API.
 
 template.html substitutions
 ===========================
