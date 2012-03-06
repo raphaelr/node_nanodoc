@@ -12,9 +12,9 @@ Usage
 =====
 
     $ npm install nanodoc
-    $ cp -r node_modules/template/doc .
+    $ cp -r node_modules/nanodoc/template/doc .
+    $ vim doc/input/index.md
     $ node_modules/.bin/nanodoc
-	$ vim doc/input/index.md
     $ your_browser doc/output/index.html
 
 You don't even need to launch a server!
@@ -43,7 +43,6 @@ Requirements
 
 Roadmap
 =======
-* Navigation in the final HTML
 * Automatic regeneration of the output directory if the input changes
 
 License
