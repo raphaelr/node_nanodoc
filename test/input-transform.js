@@ -3,8 +3,6 @@ var expect = require('expect.js'),
     helper = require('./helper')
 
 describe('input transform', function() {
-	var navigation = '<ul><li><a href="a.html">a-a-a</a></li><li><a href="no_title.html">no_title</a></li><li>sub<ul><li><a href="sub.b.html">b-b-b</a></li></ul></li></ul>';
-	
 	before(function(done) {
 		helper.nanodocHere(done);
 	});
@@ -23,7 +21,7 @@ describe('input transform', function() {
 			expect(data.match(/^a-a-a;/)).to.be.ok();
 			expect(data.match(/a-a-a<\/h1>/)).to.be.ok();
 			expect(data.match(/text/)).to.be.ok();
-			expect(data.split(';')[2]).to.equal(navigation);
+			expect(data.match(/NAVIGATION/)).to.be.ok();
 			done();
 		});
 	});
@@ -42,7 +40,7 @@ describe('input transform', function() {
 			expect(data.match(/^b-b-b;/)).to.be.ok();
 			expect(data.match(/b-b-b<\/h1>/)).to.be.ok();
 			expect(data.match(/TEXT/)).to.be.ok();
-			expect(data.split(';')[2]).to.equal(navigation);
+			expect(data.match(/NAVIGATION/)).to.be.ok();
 			done();
 		});
 	});

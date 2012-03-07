@@ -6,7 +6,6 @@ var _ = require('underscore'),
     jqtpl = require('jqtpl'),
     path = require('path'),
     rimraf = require('rimraf'),
-    util = require('util'),
     wrench = require('wrench');
 
 module.exports = function(options, cb) {
@@ -23,7 +22,7 @@ module.exports = function(options, cb) {
 	var inputBasename = new RegExp('^' + escapeRegex(options.input) + '\/?(.*)\.(md|markdown)$');
 	var dataName = new RegExp('^' + escapeRegex(options.data) + '\/?(.*)$');
 	
-	var inputs = { }, flatInputs = [ ];
+	var inputs = { };
 	
 	flow.exec(
 		function() {
@@ -60,26 +59,8 @@ module.exports = function(options, cb) {
 		if(ok) { this.call(this, argsArray); }
 	}
 	
-	function transform(inpath, outpath, cb, copyfn) {
-		fs.stat(inpath, function(err, stat) {
-			if(err) return cb(err);
-			if(stat.isDirectory()) {
-				fs.mkdir(outpath, undefined, errcheck(cb));
-			} else {
-				copyfn(inpath, outpath, cb);
-			}
-		});
-	}
-	
 	function escapeRegex(text) {
 		return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-	}
-	
-	function findTargetInputs(pathcomps) {
-		return _.reduce(pathcomps, function(target, pathcomp) {
-			if(!target[pathcomp]) { target[pathcomp] = { '|thisname': pathcomp }; }
-			return target[pathcomp];
-		}, inputs);
 	}
 	
 	// Main logic
@@ -112,9 +93,7 @@ module.exports = function(options, cb) {
 	
 	function parseOneInputFile(input, cb) {
 		var basename = input.match(inputBasename)[1];
-		var pathcomps = basename.split('/');
-		var target = findTargetInputs(pathcomps);
-		
+		var outputBasename = basename.replace('/', '.');
 		flow.exec(
 			function() {
 				fs.readFile(input, 'utf8', errcheck(this));
@@ -122,26 +101,27 @@ module.exports = function(options, cb) {
 				data = showdown(data[0]);
 				var titleMatch = data.match(/<h1(?:.*?)>(.*?)<\/h1>/);
 				var title = titleMatch ? titleMatch[1] : basename;
-				target.title = title;
-				target.content = data;
-				target.basename = pathcomps.join('.');
-				target.thisname = pathcomps[pathcomps.length - 1];
-				target.outpath = options.output + '/' + target.basename + '.html';
-				flatInputs.push(target);
+				inputs[outputBasename] = {
+					title: title,
+					content: data,
+					outpath: options.output + '/' + outputBasename + '.html'
+				};
 				this();
 			}, cb
 		);
 	}
 	
 	function writeInputFiles(cb) {
-		var nav = buildNavigation();
+		var navigationHTML = inputs['_navigation'] ? inputs['_navigation'].content : '';
 		flow.exec(
 			function() {
-				for(var i=0; i<flatInputs.length; i++) {
-					var input = flatInputs[i];
-					var html = jqtpl.tmpl('doc', { content: input.content, title: input.title, navigation: nav });
+				for(var key in inputs) {
+					if(key === '_navigation') { continue; }
+					var input = inputs[key];
+					var html = jqtpl.tmpl('doc', { content: input.content, title: input.title, navigation: navigationHTML });
 					fs.writeFile(input.outpath, html, 'utf8', this.MULTI());
 				}
+				this.MULTI()();
 			}, errcheckMulti, cb
 		);
 	}
@@ -154,29 +134,5 @@ module.exports = function(options, cb) {
 				fs.unlink(options.output + '/template.html', errcheck(this));
 			}, cb
 		);
-	}
-	
-	function buildNavigation(root) {
-		var toplevel = !root;
-		root = root || inputs;
-		if(typeof root !== 'object') { return; }
-		
-		return _.reduce(root, function(list, node) {
-			if(node['|thisname'] === 'index' && !toplevel || typeof node !== 'object') { return list; }
-			list += '<li>';
-			if(node.content) {
-				list += '<a href="' + node.basename + '.html">' + node.title + '</a>';
-			} else {
-				if(node.index && node.index.content) {
-					list += '<a href="' + node.index.basename + '.html">' + node.index.title + '</a>';
-				} else if(node.index) {
-					list += node.index.title;
-				} else {
-					list += node['|thisname'];
-				}
-				list += buildNavigation(node);
-			}
-			return list + '</li>';
-		}, '<ul>') + '</ul>';
 	}
 };
