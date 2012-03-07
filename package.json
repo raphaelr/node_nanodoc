@@ -1,12 +1,11 @@
 {
 	"name": "nanodoc",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"author": "Raphael Robatsch <raphaelr@f-m.fm>",
 	"description": "Very simple HTML documentation generator",
 	"main": "./nanodoc.js",
 	"keywords": ["documentation", "docs"],
 	
-	"homepage": "https://github.com/raphaelr/node_nanodoc",
 	"repository": { "type": "git", "url": "https://github.com/raphaelr/node_nanodoc" },
 	
 	"dependencies": {
