@@ -93,7 +93,7 @@ module.exports = function(options, cb) {
 	
 	function parseOneInputFile(input, cb) {
 		var basename = input.match(inputBasename)[1];
-		var outputBasename = basename.replace('/', '.');
+		var outputBasename = basename.replace(/\//g, '.');
 		flow.exec(
 			function() {
 				fs.readFile(input, 'utf8', errcheck(this));
