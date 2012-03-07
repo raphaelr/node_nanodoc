@@ -19,6 +19,12 @@ Usage
 
 You don't even need to launch a server!
 
+Navigation
+==========
+If it exists, nanodoc reads the file `doc/input/_navigation.md` (or `.markdown`) and passes
+it to the template. You have to create it manually, although procedural generation of a
+navigation tree is possible, it is hard to sort it the way the user wants.
+
 Useful notes
 ============
 * Everything in the `doc/data` folder, including subdirectories, except the `template.html`
@@ -43,7 +49,7 @@ Requirements
 
 Roadmap
 =======
-* Automatic regeneration of the output directory if the input changes
+* Automatic regeneration of the output directory if the input changes (long-term)
 
 License
 =======

@@ -51,8 +51,7 @@ Design demonstration
 
 We've already seen some [links](http://nodejs.org "node.js") in this file, but this time
 I put a title on it. And this is a [reference link][refl]. This paragraph also contains
-other inline elements like *emphasis*, **strong emphasis**, ***really strong emphasis***,
-_underscoring_ and **_*derp ephasis*_**.
+other inline elements like *emphasis*, **strong emphasis** and ***really strong emphasis***.
 
 After this paragraph, you'll see the node.js logo two times, once using inline syntax
 and once using reference syntax.
